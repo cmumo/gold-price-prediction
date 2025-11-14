@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gold Trading Terminal</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&display=swap');
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    body {
+      font-family: 'Orbitron', sans-serif;
+      background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
+      color: #fff;
+      min-height: 100vh;
+      padding: 1rem;
+    }
+    
+    .container { max-width: 1400px; margin: 0 auto; }
+    
+    /* Header */
+    .header {
+      text-align: center;
+      padding: 2rem 0;
+      margin-bottom: 2rem;
+      position: relative;
+    }
+    
+    .header h1 {
+      font-size: 3rem;
+      font-weight: 900;
+      color: #0ff;
+      text-shadow: 0 0 30px #0ff;
+      margin-bottom: 0.5rem;
+    }
+    
+    .logout-btn {
+      position: absolute;
+      top: 2rem;
+      right: 1rem;
+      padding: 0.5rem 1rem;
+      background: rgba(255, 85, 85, 0.2);
+      border: 1px solid #f55;
+      border-radius: 0.5rem;
+      color: #f55;
+      text-decoration: none;
+      font-size: 0.875rem;
+      transition: all 0.3s;
+    }
+    
+    .logout-btn:hover {
+      background: rgba(255, 85, 85, 0.4);
+      box-shadow: 0 0 10px #f55;
+    }
+    
+    .status {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.875rem;
+      color: #0f0;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+    
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #0f0;
+      animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+    
+    /* Grid */
+    .grid {
+      display: grid;
+      gap: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    
+    .grid-2 {
+      grid-template-columns: 2fr 1fr;
+    }
+    
+    .grid-equal {
+      grid-template-columns: 1fr 1fr;
+    }
+    
+    /* Cards */
+    .card {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(10px);
+      border: 2px solid;
+      border-radius: 1rem;
+      padding: 2rem;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    }
+    
+    /* Price Card */
+    .price-card {
+      border-color: #ff0;
+      text-align: center;
+    }
+    
+    .price-label {
+      font-size: 0.875rem;
+      color: #888;
+      text-transform: uppercase;
+      margin-bottom: 1rem;
+    }
+    
+    .price-value {
+      font-size: 5rem;
+      font-weight: 900;
+      color: #ff0;
+      text-shadow: 0 0 40px #ff0;
+      line-height: 1;
+    }
+    
+    /* Signal Card */
+    .signal-card {
+      border-color: #888;
+      text-align: center;
+    }
+    
+    .signal-card.buy {
+      border-color: #0f0;
+      background: rgba(0, 255, 0, 0.1);
+    }
+    
+    .signal-card.sell {
+      border-color: #f55;
+      background: rgba(255, 85, 85, 0.1);
+    }
+    
+    .signal-text {
+      font-size: 4rem;
+      font-weight: 900;
+      margin: 1rem 0;
+    }
+    
+    .signal-text.buy {
+      color: #0f0;
+      text-shadow: 0 0 40px #0f0;
+    }
+    
+    .signal-text.sell {
+      color: #f55;
+      text-shadow: 0 0 40px #f55;
+    }
+    
+    .signal-text.hold {
+      color: #888;
+    }
+    
+    .confidence {
+      font-size: 1.25rem;
+      color: #aaa;
+      font-weight: 700;
+    }
+    
+    /* Levels Card */
+    .levels-card {
+      border-color: #0ff;
+    }
+    
+    .card-title {
+      font-size: 1.25rem;
+      margin-bottom: 1.5rem;
+      color: #0ff;
+    }
+    
+    .level-item {
+      padding: 1rem;
+      margin-bottom: 0.75rem;
+      border-radius: 0.5rem;
+      border-left: 4px solid;
+    }
+    
+    .level-item.tp {
+      background: rgba(0, 255, 136, 0.1);
+      border-color: #0f8;
+    }
+    
+    .level-item.sl {
+      background: rgba(255, 85, 85, 0.1);
+      border-color: #f55;
+    }
+    
+    .level-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .level-label {
+      font-size: 0.875rem;
+      font-weight: 700;
+    }
+    
+    .level-label.tp { color: #0f8; }
+    .level-label.sl { color: #f88; }
+    
+    .level-value {
+      font-size: 1.75rem;
+      font-weight: 900;
+    }
+    
+    .level-value.tp { color: #0ff; }
+    .level-value.sl { color: #f55; }
+    
+    .level-desc {
+      font-size: 0.75rem;
+      color: rgba(255, 255, 255, 0.4);
+      margin-top: 0.25rem;
+    }
+    
+    .no-signal {
+      text-align: center;
+      padding: 3rem 0;
+      color: #666;
+      font-size: 1.1rem;
+    }
+    
+    /* History Card */
+    .history-card {
+      border-color: #a0f;
+    }
+    
+    .history-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.75rem;
+      margin-bottom: 0.5rem;
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 0.5rem;
+      transition: background 0.2s;
+    }
+    
+    .history-item:hover {
+      background: rgba(255, 255, 255, 0.08);
+    }
+    
+    .history-time {
+      font-size: 0.875rem;
+      color: #888;
+    }
+    
+    .history-price {
+      font-size: 1.125rem;
+      font-weight: 700;
+      color: #ff0;
+    }
+    
+    /* Disclaimer */
+    .disclaimer {
+      background: rgba(255, 136, 0, 0.1);
+      border: 2px solid #f80;
+      border-radius: 0.5rem;
+      padding: 1rem;
+      font-size: 0.75rem;
+      color: #fa0;
+    }
+    
+    /* Responsive */
+    @media (max-width: 1024px) {
+      .grid-2,
+      .grid-equal {
+        grid-template-columns: 1fr;
+      }
+      
+      .header h1 { font-size: 2rem; }
+      .price-value { font-size: 3.5rem; }
+      .signal-text { font-size: 2.5rem; }
+      
+      .logout-btn {
+        position: static;
+        display: block;
+        margin: 1rem auto 0;
+        width: fit-content;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <div class="header">
+      <a href="/api/logout" class="logout-btn">Logout</a>
+      <h1>⚡ GOLD TRADING TERMINAL ⚡</h1>
+      <div class="status">
+        <span class="status-dot"></span>
+        <span id="status">Connecting...</span>
+      </div>
+    </div>
+    
+    <!-- Main Grid -->
+    <div class="grid grid-2">
+      <!-- Price Display -->
+      <div class="card price-card">
+        <div class="price-label">XAU/USD LIVE PRICE</div>
+        <div class="price-value" id="price">—</div>
+      </div>
+      
+      <!-- Signal Display -->
+      <div class="card signal-card" id="signalCard">
+        <div class="price-label">TRADING SIGNAL</div>
+        <div class="signal-text" id="signal">HOLD</div>
+        <div class="confidence" id="confidence"></div>
+      </div>
+    </div>
+    
+    <!-- Bottom Grid -->
+    <div class="grid grid-equal">
+      <!-- TP/SL Levels -->
+      <div class="card levels-card">
+        <div class="card-title">📈 TAKE PROFIT & STOP LOSS</div>
+        <div id="levels"></div>
+      </div>
+      
+      <!-- Price History -->
+      <div class="card history-card">
+        <div class="card-title">📊 RECENT PRICES</div>
+        <div id="history"></div>
+      </div>
+    </div>
+    
+    <!-- Disclaimer -->
+    <div class="disclaimer">
+      <strong>⚠️ RISK WARNING:</strong> Trading gold involves substantial risk. 
+      This is for educational purposes only. Always do your own research and consult financial advisors.
+    </div>
+  </div>
+
+  <script>
+    const ws = new WebSocket(`ws://${location.host}/ws`);
+    const priceHistory = [];
+    
+    ws.onopen = () => {
+      document.getElementById('status').textContent = 'Live';
+    };
+    
+    ws.onmessage = (e) => {
+      const data = JSON.parse(e.data);
+      
+      // Update price
+      document.getElementById('price').textContent = `$${data.price.toFixed(2)}`;
+      
+      // Update signal
+      const signalEl = document.getElementById('signal');
+      const signalCard = document.getElementById('signalCard');
+      const confidenceEl = document.getElementById('confidence');
+      
+      signalEl.textContent = data.signal;
+      signalEl.className = `signal-text ${data.signal.toLowerCase()}`;
+      signalCard.className = `card signal-card ${data.signal.toLowerCase()}`;
+      
+      confidenceEl.textContent = data.signal !== 'HOLD' 
+        ? `${data.confidence}% Confidence` 
+        : '';
+      
+      // Update levels
+      const levelsEl = document.getElementById('levels');
+      if (data.levels) {
+        levelsEl.innerHTML = `
+          <div class="level-item tp">
+            <div class="level-row">
+              <span class="level-label tp">TP1</span>
+              <span class="level-value tp">$${data.levels.tp1}</span>
+            </div>
+            <div class="level-desc">Conservative Target</div>
+          </div>
+          <div class="level-item tp">
+            <div class="level-row">
+              <span class="level-label tp">TP2</span>
+              <span class="level-value tp">$${data.levels.tp2}</span>
+            </div>
+            <div class="level-desc">Moderate Target</div>
+          </div>
+          <div class="level-item tp">
+            <div class="level-row">
+              <span class="level-label tp">TP3</span>
+              <span class="level-value tp">$${data.levels.tp3}</span>
+            </div>
+            <div class="level-desc">Aggressive Target</div>
+          </div>
+          <div class="level-item sl">
+            <div class="level-row">
+              <span class="level-label sl">STOP LOSS</span>
+              <span class="level-value sl">$${data.levels.sl}</span>
+            </div>
+            <div class="level-desc">Risk Management</div>
+          </div>
+        `;
+      } else {
+        levelsEl.innerHTML = '<div class="no-signal">No Active Signal<br><small>Waiting for opportunity...</small></div>';
+      }
+      
+      // Update history
+      priceHistory.push({ time: new Date(), price: data.price });
+      if (priceHistory.length > 8) priceHistory.shift();
+      
+      const historyEl = document.getElementById('history');
+      historyEl.innerHTML = priceHistory.slice().reverse().map(h => `
+        <div class="history-item">
+          <span class="history-time">${h.time.toLocaleTimeString()}</span>
+          <span class="history-price">$${h.price.toFixed(2)}</span>
+        </div>
+      `).join('');
+    };
+    
+    ws.onclose = () => {
+      document.getElementById('status').textContent = 'Reconnecting...';
+      setTimeout(() => location.reload(), 3000);
+    };
+    
+    ws.onerror = () => {
+      document.getElementById('status').textContent = 'Connection Error';
+    };
+  </script>
+</body>
+</html>

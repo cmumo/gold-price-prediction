@@ -1,0 +1,11 @@
+fastapi
+uvicorn[standard]
+websockets
+python-dotenv
+scikit-learn
+numpy
+requests
+passlib[bcrypt]
+python-jose[cryptography]
+python-multipart
+websocket-client
