@@ -586,7 +586,7 @@ HTML_CONTENT = """
       
       /* Chart smaller on mobile */
       #chart-wrapper {
-        min-height: 330px;
+        min-height: 300px;
       }
       
       /* Compact cards */
@@ -931,4 +931,5 @@ if __name__ == "__main__":
     import uvicorn
 
     uvicorn.run(app, host="0.0.0.0", port=8000)
+
 
