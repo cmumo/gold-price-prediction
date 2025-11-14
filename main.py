@@ -667,7 +667,7 @@ HTML_CONTENT = """
 <body>
   <div class="container">
     <div class="header">
-      <h1>⚡ GOLD PRICE PREDICTION</h1>
+      <h1>⚡GOLD PRICE PREDICTION⚡</h1>
       <div class="status">
         <span class="status-dot"></span>
         <span id="status">Connecting...</span>
@@ -768,7 +768,7 @@ HTML_CONTENT = """
           "width": "100%",
           "height": "100%",
           "symbol": "OANDA:XAUUSD",
-          "interval": "15",
+          "interval": "30",
           "timezone": "Etc/UTC",
           "theme": "dark",
           "style": "1",
@@ -931,3 +931,4 @@ if __name__ == "__main__":
     import uvicorn
 
     uvicorn.run(app, host="0.0.0.0", port=8000)
+
