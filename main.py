@@ -787,7 +787,9 @@ HTML_CONTENT = """
 
   <!-- WebSocket Logic -->
   <script>
-    const ws = new WebSocket(`ws://${location.host}/ws`);
+    // Auto-detect correct WebSocket protocol
+    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    const ws = new WebSocket(`${protocol}//${location.host}/ws`);
     const priceHistory = [];
 
     const upIcon = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>';
@@ -795,11 +797,13 @@ HTML_CONTENT = """
     const holdIcon = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14"></path>';
 
     ws.onopen = () => {
+      console.log('WebSocket connected!');
       document.getElementById('status').textContent = 'Live';
     };
 
     ws.onmessage = (e) => {
       const data = JSON.parse(e.data);
+      console.log('Received data:', data); // Debug log
 
       document.getElementById('price').textContent = `$${data.price.toFixed(2)}`;
       document.getElementById('direction').textContent = data.direction;
@@ -875,11 +879,13 @@ HTML_CONTENT = """
     };
 
     ws.onclose = () => {
+      console.log('WebSocket disconnected');
       document.getElementById('status').textContent = 'Reconnecting...';
       setTimeout(() => location.reload(), 3000);
     };
 
-    ws.onerror = () => {
+    ws.onerror = (error) => {
+      console.error('WebSocket error:', error);
       document.getElementById('status').textContent = 'Connection Error';
     };
     
@@ -923,4 +929,5 @@ async def startup():
 
 if __name__ == "__main__":
     import uvicorn
+
     uvicorn.run(app, host="0.0.0.0", port=8000)
